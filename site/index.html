@@ -2,9 +2,17 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
-    <title>hello-wasm example</title>
+    <title>sudoku_wasm</title>
+    <!-- <script src="./class/sudoku.js" defer></script> -->
+    <script src="./index.js" defer></script>
   </head>
   <body>
-    <script src="./index.js"></script>
+      <h1>Why having fun when machines can do it for us ?</h1>
+      <p>Thired of having fun solving sudoku grids ? Here is a sudoku resolver with 3 options :</p>
+      <ul>
+        <li>JS : The algorithm will be wirtten in JavaScript, by far the slowest option. Your machine will do the calculations to solve the grid.</li>
+        <li>WASM : The algorithm will be written in Rust and compiled in WASM. The fastest option. Your machine will do the calculations to solve the grid.</li>
+        <li>API : The algorith will be written in Rust and will get and return the grid via HTTP. My server will do the calculations, please do not abuse it or I will have to stop it.</li>
+      </ul>
   </body>
 </html>

@@ -1,6 +1,7 @@
 import * as wasm from "front-end";
+import { Sudoku } from './class/sudoku';
 
-wasm.greet("WebAssembly with npm");
+let grids = [];
 
 const grid_to_solve = [
     [0, 7, 0, 0, 3, 0, 2, 0, 0],
@@ -18,3 +19,5 @@ const grid_to_solve = [
 const solved_grid = wasm.solve_sudoku(grid_to_solve);
 
 console.log(solved_grid);
+
+grids.push(new Sudoku());

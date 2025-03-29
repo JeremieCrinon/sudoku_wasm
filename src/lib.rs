@@ -8,16 +8,6 @@ mod sudoku;
 struct SudokuGrid([[u8; 9]; 9]);
 
 #[wasm_bindgen]
-extern "C" {
-    pub fn alert(s: &str);
-}
-
-#[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(&format!("Hello, {}!", name));
-}
-
-#[wasm_bindgen]
 pub fn solve_sudoku(grid_to_solve: JsValue) -> JsValue {
     let grid_to_solve: SudokuGrid = from_value(grid_to_solve).unwrap();
 
