@@ -1,0 +1,18 @@
+.grid {
+    width: 95dvw;
+    margin-left: 2.5dvw;
+}
+
+.grid-line {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.cell {
+    aspect-ratio: 1/1;
+    width: calc(100% / 9);
+    font-size: 50px;
+    text-align: center;
+}
+

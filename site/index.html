@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>sudoku_wasm</title>
-    <!-- <script src="./class/sudoku.js" defer></script> -->
+    <link rel="stylesheet" href="style.css" />
     <script src="./index.js" defer></script>
   </head>
   <body>
@@ -11,8 +11,8 @@
       <p>Thired of having fun solving sudoku grids ? Here is a sudoku resolver with 3 options :</p>
       <ul>
         <li>JS : The algorithm will be wirtten in JavaScript, by far the slowest option. Your machine will do the calculations to solve the grid.</li>
-        <li>WASM : The algorithm will be written in Rust and compiled in WASM. The fastest option. Your machine will do the calculations to solve the grid.</li>
-        <li>API : The algorith will be written in Rust and will get and return the grid via HTTP. My server will do the calculations, please do not abuse it or I will have to stop it.</li>
+        <li>WASM : The algorithm will be written in Rust and compiled in WASM. About has fast as the API. Your machine will do the calculations to solve the grid.</li>
+        <li>API : The algorith will be written in Rust and will get and return the grid via HTTP. About has fast as WASM if you have a good internet connexion, else, it will be slower. My server will do the calculations, please do not abuse it or I will have to stop it.</li>
       </ul>
   </body>
 </html>
