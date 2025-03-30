@@ -1,10 +1,12 @@
 .grid {
+    /* We want the grid to be 95% of the viewport width (dvw = dinamic viewport width, this accounts elements like the scroll bar, vw does not, and can make a really disgracious horizontal scroll bar) */
     width: 95dvw;
     margin-left: 2.5dvw;
 }
 
 .grid-line {
     display: flex;
+    /* If, for some reason, the cells are larger than this, we really don't want them to go to a next line, we prefer having them overflow */
     flex-wrap: nowrap;
     width: 100%;
 }
@@ -14,5 +16,11 @@
     width: calc(100% / 9);
     font-size: 50px;
     text-align: center;
+}
+
+@media screen and (min-width: 1000px) {
+    .grid {
+        width: 50dvw;
+    }
 }
 
