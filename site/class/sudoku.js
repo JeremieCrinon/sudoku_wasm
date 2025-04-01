@@ -47,7 +47,7 @@ export class Sudoku {
         resolver_radio.innerHTML = `
             <legend>Please select the resolver you want.</legend>
             <div>
-                <input type="radio" id="resolve_radio_wasm" name="resolve_radio_element" class="resolve_radio_element" value="WASM" />
+                <input type="radio" id="resolve_radio_wasm" name="resolve_radio_element" class="resolve_radio_element" value="WASM" checked />
                 <label for="resolve_radio_wasm">WASM</label>
                 
                 <input type="radio" id="resolve_radio_api" name="resolve_radio_element" class="resolve_radio_element" value="API" />
