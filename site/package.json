@@ -4,6 +4,7 @@
     "serve": "webpack serve --config webpack.config.js --open"
   },
   "dependencies": {
+    "axios": "^1.8.4",
     "front-end": "file:../pkg"
   },
   "devDependencies": {

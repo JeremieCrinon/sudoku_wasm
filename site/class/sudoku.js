@@ -1,4 +1,6 @@
 import * as wasm from "front-end";
+import axios from "axios";
+import config from "../config.json";
 
 export class Sudoku {
     // The body of the page, to add things in it
@@ -153,13 +155,52 @@ export class Sudoku {
         // We first update #grid to what the user put in #grid_to_display
         this._get_grid();
 
-        const solved_grid = wasm.solve_sudoku(this.#grid);
+        // We initiate a variable that is an empty grid, it will then be updated to the solved grid if it is solvable
+        let solved_grid = this.#empty_grid;
 
-        // If WASM returned an empty grid, it means the grid isn't solvable
+        // We look at what the #resoler looks like, it is equal to what the user choose in the solver radio above
+        if (this.#resolver === "JS") {
+            alert("JS not done yet");
+        } else if (this.#resolver === "WASM") {
+            // We update solved_grid to be equal to the result returned by the WASM. If it isn't solvable, the WASM will return an empty grid
+            solved_grid = wasm.solve_sudoku(this.#grid);    
+            
+            // We call the function to verify the solved grid and update the displayed grid
+            this._verify_solved_grid();
+        } else if (this.#resolver === "API") {
+            // We fetch the result from config.api_url
+            axios.post(`${config.api_url}/sudoku`, {
+                // We put the grid in the body of the request
+                grid: this.#grid,
+            })
+            // 
+            .then((r) => {
+                this._verify_solved_grid(r.data.solved_grid);
+            })
+            .catch((e) => {
+                if (e.status === 400 || e.status === 422) {
+                    // If it is a 400 or 422 error, it means the grid isn't solvable
+                    alert("The grid isn't solvable");
+                } else {
+                    // Else it means there has been an unknown error
+                    alert("There has been an error with the API, please try again later");
+                }
+            })
+        } else {
+            // It should not be possible to get here without modifying the code, as you can only change #resolver to the values of the radio buttons. But in case there is a bug, or someone modifyies the code, we handle the error
+            alert("There has been an error with resolver selection");
+        }
+
+        
+    }
+
+    // We do a separate function for that cause of the async API request, we cannot put this code just after the conditions, as it will be executed before the grid is resolved for the API option, and we don't want to repeat ourselfs in each condition
+    _verify_solved_grid = (solved_grid) => {
+        // If we have an empty grid here, it means the grid isn't solvable
         if (solved_grid === this.#empty_grid ) {
             alert("The grid isn't solvable");
         } else {
-            // Else, we update #grid to be what the WASM returned
+            // Else, we update #grid to be what the resolver returned
             this.#grid = solved_grid;
         }
         
