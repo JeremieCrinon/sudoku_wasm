@@ -25,7 +25,7 @@ export class Sudoku {
     #grid = this.#empty_grid;
 
     // Which resolver the user chooses
-    #resolver = "JS";
+    #resolver = "WASM";
 
     constructor() {
         // When the class is constructed, we call this function that will add all elements needed
@@ -47,9 +47,6 @@ export class Sudoku {
         resolver_radio.innerHTML = `
             <legend>Please select the resolver you want.</legend>
             <div>
-                <input type="radio" id="resolve_radio_js" name="resolve_radio_element" class="resolve_radio_element" value="JS" checked />
-                <label for="resolve_radio_js">JS</label>
-
                 <input type="radio" id="resolve_radio_wasm" name="resolve_radio_element" class="resolve_radio_element" value="WASM" />
                 <label for="resolve_radio_wasm">WASM</label>
                 
@@ -150,24 +147,19 @@ export class Sudoku {
         })
     }
 
-    // This function does not directly solves the grid, it calls another function (WASM, API, or a JS function in another file) to solve the grid.
+    // This function does not directly solves the grid, it calls something else (WASM function or an API) to solve the grid.
     solve_grid = () => {
         // We first update #grid to what the user put in #grid_to_display
         this._get_grid();
 
-        // We initiate a variable that is an empty grid, it will then be updated to the solved grid if it is solvable
-        let solved_grid = this.#empty_grid;
-
         // We look at what the #resoler looks like, it is equal to what the user choose in the solver radio above
-        if (this.#resolver === "JS") {
-            alert("JS not done yet");
-        } else if (this.#resolver === "WASM") {
-            // We update solved_grid to be equal to the result returned by the WASM. If it isn't solvable, the WASM will return an empty grid
-            solved_grid = wasm.solve_sudoku(this.#grid);    
-            
-            // We call the function to verify the solved grid and update the displayed grid
-            this._verify_solved_grid();
+        if (this.#resolver === "WASM") {
+
+            // We call the wasm.solve_sudoku function with the grid as an argument, and whatever the wasm returned calls the verify_solved_grid function (we call 2 functions in one line, first, the wasm.solve_sudoku, and what is returned by it is the argument for the verify_solved_grid that is then called)
+            this._verify_solved_grid(wasm.solve_sudoku(this.#grid));
+
         } else if (this.#resolver === "API") {
+
             // We fetch the result from config.api_url
             axios.post(`${config.api_url}/sudoku`, {
                 // We put the grid in the body of the request
@@ -186,9 +178,12 @@ export class Sudoku {
                     alert("There has been an error with the API, please try again later");
                 }
             })
+
         } else {
+
             // It should not be possible to get here without modifying the code, as you can only change #resolver to the values of the radio buttons. But in case there is a bug, or someone modifyies the code, we handle the error
             alert("There has been an error with resolver selection");
+
         }
 
         
