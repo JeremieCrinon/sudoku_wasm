@@ -72,12 +72,12 @@ export class Sudoku {
         let blue = 81;
 
         // We iterate for each of the lines (x)
-        for (let x = 1 ; x <= 9 ; x++) {
+        for (let x = 1; x <= 9; x++) {
             // We make a new div that will contain all cells of the line
             const div = document.createElement('div');
             div.classList.add("grid-line");
             // We iterate for each of the cells of the line (columns)
-            for (let y = 1 ; y <= 9 ; y++ ) {
+            for (let y = 1; y <= 9; y++) {
                 // We make a new element that will be an input, representing the cell
                 const cell = document.createElement(('input'));
                 // We add these classes to later be able to access and edit this input
@@ -100,6 +100,13 @@ export class Sudoku {
             // We append the grid_display the line we just created
             this.#grid_display.append(div);
         };
+
+        // Create the file input for Json Grids
+        const file_input = document.createElement('input'); // Create the input element
+        file_input.type = "file"; // Add it the file type
+        file_input.addEventListener("change", this._solveJsonGrids); // Add an even listener for change (change of file) that will call the solveJsonGrids method
+        this.#grid_display.append(file_input); // Add the file input to the grid display
+
         // We finally add the grid_display to the body
         this.#body.append(this.#grid_display);
     }
@@ -165,19 +172,19 @@ export class Sudoku {
                 // We put the grid in the body of the request
                 grid: this.#grid,
             })
-            // 
-            .then((r) => {
-                this._verify_solved_grid(r.data.solved_grid);
-            })
-            .catch((e) => {
-                if (e.status === 400 || e.status === 422) {
-                    // If it is a 400 or 422 error, it means the grid isn't solvable
-                    alert("The grid isn't solvable");
-                } else {
-                    // Else it means there has been an unknown error
-                    alert("There has been an error with the API, please try again later");
-                }
-            })
+                // 
+                .then((r) => {
+                    this._verify_solved_grid(r.data.solved_grid);
+                })
+                .catch((e) => {
+                    if (e.status === 400 || e.status === 422) {
+                        // If it is a 400 or 422 error, it means the grid isn't solvable
+                        alert("The grid isn't solvable");
+                    } else {
+                        // Else it means there has been an unknown error
+                        alert("There has been an error with the API, please try again later");
+                    }
+                })
 
         } else {
 
@@ -186,20 +193,33 @@ export class Sudoku {
 
         }
 
-        
+
     }
 
     // We do a separate function for that cause of the async API request, we cannot put this code just after the conditions, as it will be executed before the grid is resolved for the API option, and we don't want to repeat ourselfs in each condition
     _verify_solved_grid = (solved_grid) => {
         // If we have an empty grid here, it means the grid isn't solvable
-        if (solved_grid === this.#empty_grid ) {
+        if (solved_grid === this.#empty_grid) {
             alert("The grid isn't solvable");
         } else {
             // Else, we update #grid to be what the resolver returned
             this.#grid = solved_grid;
         }
-        
+
         // We update #grid_to_display to the solution.
         this._update_grid();
+    }
+
+    // This function gets the files uploaded, parse them, solve all grids and send the result to the user
+    _solveJsonGrids = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const buffer = await file.arrayBuffer();
+        const uint8Array = new Uint8Array(buffer);
+
+        const result = wasm.solve_json(uint8Array);
+
+        console.log(result);
     }
 }
