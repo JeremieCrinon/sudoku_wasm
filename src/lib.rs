@@ -31,23 +31,21 @@ pub fn solve_sudoku(grid_to_solve: JsValue) -> JsValue { // This function is cal
 
 #[wasm_bindgen]
 pub fn solve_json(data: &[u8]) -> String { // This function is called by the JS, it will get a json file, parse it, solve each grids, then return a json file with the solutions
-    let start_total = Date::now();
+    let start_total = Date::now(); // Get the current time (for calculating how much time it took)
 
-    let s = match std::str::from_utf8(data) {
-        Ok(v) => v,
-        Err(e) => return format!("UTF-8 error: {}", e),
+    let grids: Vec<SudokuGrid> = match std::str::from_utf8(data) // Parse the grids from a json into a Vec<SudokuGrid>
+        .ok()
+        .and_then(|s| serde_json::from_str(s).ok())
+    {
+        Some(grids) => grids,
+        None => return "error_json".to_string(), // If it fails we return "error_json" as a string
     };
 
-    let grids: Vec<SudokuGrid> = match serde_json::from_str(s) {
-        Ok(v) => v,
-        Err(e) => return format!("JSON parse error: {}", e),
-    };
+    let mut solved_grids: Vec<SudokuGrid> = Vec::with_capacity(grids.len()); // A vec that we will put the solved grids into
 
-    let mut solved_grids: Vec<SudokuGrid> = Vec::with_capacity(grids.len());
+    let start_solving = Date::now(); // Get the current time
 
-    let start_solving = Date::now();
-
-    for grid_to_solve in grids {
+    for grid_to_solve in grids { // For each grid we have to solve
         // We make a new grid object, this object will be easier to manipulate than if we used the 2D array directly
         let mut grid = Grid::new();
         // We call the function fill_grid from ./sudoku/fill.rs with the grid object, and the grid_to_solve that the JS gave us
@@ -59,15 +57,16 @@ pub fn solve_json(data: &[u8]) -> String { // This function is called by the JS,
         // If success, we make result the grid object that we turned back into an array, else, we return an empty grid, the JS will then know that the grid isn't correct
         let result = if success { grid.to_array() } else { [[0; 9]; 9] };
 
+        // Add the grid we just solved to our array of solved grids
         solved_grids.push(SudokuGrid(result));
     }
 
-    let solving_duration = Date::now() - start_solving;
-    let total_duration = Date::now() - start_total;
+    let solving_duration = Date::now() - start_solving; // Calculate the total time we spent solving
+    let total_duration = Date::now() - start_total; // Calculate the total time with parsing
 
-    let avg_duration = solving_duration / solved_grids.len() as f64;
+    let avg_duration = solving_duration / solved_grids.len() as f64; // Calculate the average time it took per grid
 
-    let output = serde_json::json!({
+    let output = serde_json::json!({ // Create a json object of the results
         "solved_grids": solved_grids,
         "time": {
             "total_ms": total_duration,
@@ -77,6 +76,6 @@ pub fn solve_json(data: &[u8]) -> String { // This function is called by the JS,
         "total_grids": solved_grids.len()
     });
 
-    serde_json::to_string(&output).unwrap_or_else(|e| format!("Error serializing output: {}", e))
+    serde_json::to_string(&output).unwrap_or_else(|e| format!("Error serializing output: {}", e)) // return the results as a json string
 }
 
